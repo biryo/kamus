@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>P Dictionary</title>
+</head>
+<style type="text/css">
+	.posisi{
+		padding:20%;
+		text-align: center;
+	}
+</style>
+<body>
+	<div class="posisi">
+		<div class="style" onclick="toIndex();">Loading ...</div>
+		<input type="submit" name="Next" value="Next" onclick="direct()" id="next">
+
+		<a href="google.com" id="next"></a>
+	</div>
+</body>
+<script>	
+			if ('serviceWorker' in navigator) {
+		  window.addEventListener('load', function() {
+		    navigator.serviceWorker.register('./sw.js').then(function(registration) {
+		      // Registration was successful
+		      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+		    }, function(err) {
+		      // registration failed :(
+		      console.log('ServiceWorker registration failed: ', err);
+		    });
+		  });
+		}
+		
+		function direct(){
+		  location.replace('index.html');
+		}
+</script>
+</html>
