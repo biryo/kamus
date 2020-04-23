@@ -479,7 +479,7 @@ function search_plesetan(){
 $('#dta_plesetan').html("");
 
     $.ajax({
-      url: 'http://74ed4ac1.ngrok.io/sw/db_spell.php',
+      url: 'https://74ed4ac1.ngrok.io/sw/db_spell.php',
       type:'get',
       dataType:'json',
       data:{
