@@ -195,7 +195,7 @@ function displayAbout(){
 
     $('#konten').on('click','#search-btn',function(){
     		$('#dta_plesetan').html("");
-        	if(aktif){
+        	if(!aktif){
             console.log('Offline mode');
             cariPlesetan();
           }else{
