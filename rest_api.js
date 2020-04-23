@@ -494,7 +494,7 @@ $('#dta_plesetan').html("");
         }
         else{
             var lvlsblm = parseInt($('#lvl').text());
-            var lvl = lvlsblm + nmr;
+            var lvl = lvlsblm + result.length;
             updateprofile(lvl);
 
           let data_plesetan = result;
