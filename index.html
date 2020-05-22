@@ -85,6 +85,9 @@ function displayHome(){
           </div>
         </div>  
       </div>
+      <button id='btnGiveCommand'>Give Command!</button>
+    <br><br>
+    <span id='message'></span>
       <hr>
       <div class="row justify-content-center">
         <div class="col-md-8">
@@ -195,13 +198,12 @@ function displayAbout(){
 
     $('#konten').on('click','#search-btn',function(){
     		$('#dta_plesetan').html("");
-        	if(!aktif){
+        	if(aktif){
             console.log('Offline mode');
             cariPlesetan();
           }else{
-            
             search_plesetan();
-              alert('Online Mode');
+            alert('Online Mode');
           }
     	});
 
