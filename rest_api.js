@@ -475,16 +475,24 @@ function imgBuild(idResult) {
         });
     };
 
-function search_plesetan(){
-$('#dta_plesetan').html("");
+// Pelesetan Bunyi
+function search_plesetan(pesan){
+  $('#dta_plesetan').html("");
+    if (pesan) {
+      pesanp = pesan.replace(/ .*/, '');
+      var text = pesanp;
+    }else{
+      var text = $('#input-search').val();  
+    }
+    
 
     $.ajax({
-      url: 'https://74ed4ac1.ngrok.io/sw/db_spell.php',
+      url: 'http://localhost:8989/sw/db_spell.php',
       type:'get',
       dataType:'json',
       data:{
         'operasi':'Search',
-        'key': $('#input-search').val()
+        'key': text
       },
       success: function(result){
         if(result.length == 0){
@@ -496,6 +504,7 @@ $('#dta_plesetan').html("");
             var lvlsblm = parseInt($('#lvl').text());
             var lvl = lvlsblm + result.length;
             updateprofile(lvl);
+            console.log(result.length)
 
           let data_plesetan = result;
           let nmr = 0 ;
@@ -515,9 +524,15 @@ $('#dta_plesetan').html("");
     });
 }
 
-function cariPlesetan()
+function cariPlesetan(pesan)
 {
-  var searchField = $('#input-search').val();
+  if (pesan){
+    pesanp = pesan.replace(/ .*/, '');
+    var searchField = pesanp;
+  }else{
+    var searchField = $('#input-search').val();
+  }
+  
   var max_str = searchField.trim();
   var nmr = 0 ;
   $.getJSON('kbbp.json',function(data)
@@ -551,11 +566,159 @@ function cariPlesetan()
     }                 
   });  
 }
+// akhir Pelesetan bunyi
+
+// Pelesetan kalimat
+function ambilSingkatan(isi) {
+  var str = isi;
+  var joinword="";
+  var res = str.split(" ");
+  for(i=0 ; i < res.length ; i++){
+    var ress = res[i].substr(0,1);    
+    joinword += ress;
+  }
+  return joinword
+}
+
+function search_plesetanKalimat(pesan){
+  $('#dta_plesetan').html("");
+    if (pesan) {
+      pesanp = ambilSingkatan(pesan);
+      var text = pesanp;
+    }else{
+      var texts = $('#input-search').val();
+      pesanp = ambilSingkatan(texts);
+      var text = pesanp;  
+    }
+    
+
+    $.ajax({
+      url: 'http://localhost:8989/sw/db_spell.php',
+      type:'get',
+      dataType:'json',
+      data:{
+        'operasi':'Search',
+        'key': text
+      },
+      success: function(result){
+        if(result.length == 0){
+          $('#dta_plesetan').html(`
+            <td colspan="3"><center><h1>Data Tidak Di temukan</h1></center><td>
+          `);
+        }
+        else{
+            var lvlsblm = parseInt($('#lvl').text());
+            var lvl = lvlsblm + result.length;
+            updateprofile(lvl);
+            console.log(result.length)
+
+          let data_plesetan = result;
+          let nmr = 0 ;
+          $.each(data_plesetan,function (i,data){
+                           nmr++
+            $('#dta_plesetan').append(`
+                <tr id="` +nmr+ `">
+                    <th scope="row">`+ nmr +`</th>
+                    <td>`+ data.kata_baku +`</td>
+                    <td>`+ data.arti_katanya +`</td>
+                    <td><input type="submit" name="Ser" id="serit" onclick="imgBuild(`+nmr+`)"></td>
+                 </tr>
+            `);
+        }); 
+        }
+      } 
+    });
+}
+
+function cariPlesetanKalimat(pesan)
+{
+  if (pesan){
+    var spell = ambilSingkatan(pesan);
+  }else{
+    var texts = $('#input-search').val();
+      var spell = ambilSingkatan(texts);
+  }
+  
+  var nmr = 0 ;
+  $.getJSON('kbbp.json',function(data)
+  {
+    var hasil = false;
+    $.each(data,function(key,value)
+    {
+        result = cek(value.kata_baku.trim(),spell)             
+        if(result === value.kata_baku.length)
+        {
+            hasil = true;
+              nmr++
+              $('#dta_plesetan').append(`
+              <tr id="` +nmr+ `">
+                  <th scope="row">`+ nmr +`</th>
+                  <td>`+ value.kata_baku +`</td>
+                  <td>`+ value.arti_katanya +`</td>
+                  <td><input type="submit" name="Ser" id="serit" onclick="imgBuild(`+nmr+`)"></td>
+              </tr>
+          `);                                    
+        }                
+    });
+    if(!hasil){
+      alert("Data Tidak Di temukan");
+    }
+    else{
+      var lvlsblm = parseInt($('#lvl').text());
+      var lvl = lvlsblm + nmr;
+      updateprofile(lvl);
+    }                 
+  });  
+}
+// akhir Pelesetan kalimat
 
 function showForm(){
 $('#myModal').modal({
       backdrop: 'static'
     });
+}
+
+function cek(w,s) {
+  var wrd = w;
+  var spl = s;
+  var word = wrd.split("");
+  var splitw = s.split(" ");
+  var spell = [];
+  for (i = 0 ; i < splitw.length ; i++){
+    spell[i] = splitw[i].split("");
+  }
+  var wa=0;
+  var sa=0;
+  var saa=0;
+  var saac = 0;
+  var r = 0;
+  if(word[0] === spell[0][0])
+  {
+    while(wa < word.length){
+      while(saa < spell[sa].length){
+          if(word[wa] === spell[sa][saa]){
+              if(saac <= saa){
+                    r++
+                    wa++
+                    saa++
+                    saac=saa;
+                    break;
+                }                
+            }
+            else{
+              if((spell.length - 1) > sa){                
+                sa++
+                saa=0;
+                saac=0;
+              }
+              else{
+                break;
+              }              
+            }
+        }
+    }    
+  }
+  return r
 }
 
 //similiar text
@@ -582,7 +745,7 @@ function similar_text (first, second, percent) {
   var sum
 
   for (p = 0; p < firstLength; p++) {
-    for (q = 0; q < secondLength; q++) {
+    for (q = 0; q < secondLength; q++) {                 
       for (l = 0; (p + l < firstLength) && (q + l < secondLength) && (first.charAt(p + l) === second.charAt(q + l)); l++) { // eslint-disable-line max-len
         // @todo: ^-- break up this crazy for loop and put the logic in its body
       }
@@ -616,4 +779,58 @@ function similar_text (first, second, percent) {
   return (sum * 200) / (firstLength + secondLength)
 }
 
+//speech recognartion
+        var message = $('#konten','#message');
 
+        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+        var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
+
+        var grammar = '#JSGF V1.0;'
+
+        var recognition = new SpeechRecognition();
+        var speechRecognitionList = new SpeechGrammarList();
+        speechRecognitionList.addFromString(grammar, 1);
+        recognition.grammars = speechRecognitionList;
+        recognition.lang = 'id-ID';
+        recognition.interimResults = false;
+
+        recognition.onresult = function(event) {
+            var last = event.results.length - 1;
+            var command = event.results[last][0].transcript;
+            message.textContent = 'Voice Input: ' + command + '.';
+            
+
+            if(aktif){
+              console.log('Offline mode');
+              cariPlesetanKalimat(command);
+            }else{
+              search_plesetanKalimat(command);
+              alert('Online Mode');
+            }
+
+            textBicara(command);
+        };
+
+        recognition.onspeechend = function() {
+            recognition.stop();
+        };
+
+        recognition.onerror = function(event) {
+            message.textContent = 'Error occurred in recognition: ' + event.error;
+        }        
+
+        $('#konten').on('click','#btnGiveCommand', function(){
+            recognition.start();
+            message.textContent = '';
+        });
+
+        function textBicara(pesan){
+            const speech = new SpeechSynthesisUtterance();
+            speech.text = pesan;
+            speech.volume = 1;
+            speech.rate = 1;
+            speech.pitch = 1;
+            speech.lang = 'id-ID';
+
+            window.speechSynthesis.speak(speech);
+        }
