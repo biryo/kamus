@@ -1,12 +1,12 @@
 var CACHE_NAME = 'my-site-cache-v2';
 var urlsToCache = [
   './',
-  // 'manifest.json',
+//   // 'manifest.json',
   'images/icons/icon-72x72.png',
-  'admin/assets/vendor/fontawesome-free/css/all.min.css',
-  'admin/assets/vendor/fontawesome-free/webfonts/fa-solid-900.woff2',
-  'admin/assets/vendor/fontawesome-free/webfonts/fa-solid-900.woff',
-  'admin/assets/vendor/fontawesome-free/webfonts/fa-solid-900.ttf',
+//   'admin/assets/vendor/fontawesome-free/css/all.min.css',
+//   'admin/assets/vendor/fontawesome-free/webfonts/fa-solid-900.woff2',
+//   'admin/assets/vendor/fontawesome-free/webfonts/fa-solid-900.woff',
+//   'admin/assets/vendor/fontawesome-free/webfonts/fa-solid-900.ttf',
   'html/Home.html',
   'html/KetanKalimat.html',
   'html/KetanKata.html',
