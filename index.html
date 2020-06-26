@@ -1,174 +1,265 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="icon" href="images/icons/icon-72x72.png">
 <title>Kamus - Plesetan</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <meta name=”Description” content="Kamus - Plesetan , Terjemahkan kata baku menjadi Kata Baku yang mirip (PLESETAN)."> 
 
 <!-- Bootstrap CSS -->
-<script src="scripts/jquery.js"></script>
+    <!-- <script src="scripts/jquery.js"></script> -->
+<!--  -->
+  <!-- <script href="scripts/jquery.min.js"></script> -->
+    <style type="text/css">
+      #loading {
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          position: fixed;
+          display: block;
+          opacity: 0.7;
+          background-color: #fff;
+          z-index: 99999;
+        }
+
+        #loading-image {
+          position: absolute;
+          z-index: 99999900;
+        }
+    </style>
+
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/w3.css">
+    <link rel="stylesheet" href="css/simplePagination.css">
+    <link rel="manifest" href="manifest.json">
     <script src="scripts/jsstore.js"></script>
     <script src="scripts/jsstore.worker.js"></script>
-    
-    <!-- <link rel="stylesheet" href="css/font-awesome.min.css"> -->
-  <script src="scripts/jquery.min.js"></script>
+    <link rel="stylesheet" href="admin/assets/vendor/fontawesome-free/css/all.min.css">
 </head>
-<body onload="displayHome()" id="modal">
-  <div class="profil"><table id="table_profil" hidden></table></div>
+<body id="modal" style="background-color:#FF8303 ;">
 
-    <div class="w3-sidebar w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
-      <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">&times;</button>
-      <a href="#" class="w3-bar-item w3-button" onclick="displayHome()">Home</a>a
-      <a href="#" class="w3-bar-item w3-button" onclick="displaySupport()">Support</a>
-      <a href="#" class="w3-bar-item w3-button" onclick="displayAbout()">About</a>
+  <div  class="justify-content-md-center" id="loading">
+    
+      <img id="loading-image" src="https://retchhh.files.wordpress.com/2015/03/loading1.gif?w=300&h=300" alt="Loading..." />
+    
+  </div>
+
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color:#FE6E00;">
+  <div class="container">
+    <a class="navbar-brand" href="#"><i class="fas fa-book-open"></i> Kamus Plesetan</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="displayHome()">Home</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Plesetan
+          </a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" href="#" onclick="displayPkata()">Plesetan Kata</a>
+            <a class="dropdown-item" href="#" onclick="displayPkalimat()">Plesetan Kalimat</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="displayGoP()" id="gopid">Go Premium</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="displayAbout()">About</a>
+        </li>
+        <li class="nav-item dropdown" id="profile">
+          <!-- Menu Login Logout -->
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div id="serImg" hidden>
+      
+</div>
+
+<div class="container" id="page"> 
+    <div id="konten" class="justify-content-md-center">
+
     </div>
 
-    <nav class="navbar navbar-light bg-primary">
-      <a class="navbar-brand">Kamus - Plesetan</a>
-        <button class="btn btn-light my-2 my-sm-0" onclick="openRightMenu()">&#9776; Menu</button>
-    </nav>
-
-<div class="container" id="page">
-    <div class="container" id="konten">
-     <!-- ini konten -->
     </div>
+
+    
 
     <div id="myModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Selamat Datang !</h4>
-                </div>
+              <div id="addClose">
+                
+              </div>
                 <div class="modal-body">
-                    <label for="Nama">Nama</label>
-                    <input type="text" class="form-control" id="nama" placeholder="Masukan Nama">                 
+                      <div class="form-group">
+                        <input type="email" name="email" id="email" class="form-control" aria-describedby="emailHelp" placeholder="Email" required>
+                        <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                      </div>
+                      <div class="form-group">
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+                      </div>
+                          <form action="admin/login/regis" method="GET" target="hidden-guest">
+                      <button id="login" class="btn btn-primary">Login</button>
+                      <button type="sumbit" class="btn btn-primary" id="btnSubmit">Guest</button>
+                      <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#regisemail">Register</a>  
+                          </form>             
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div id="regisemail" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content" >
+
+                <div class="modal-body">
+                    
+                      <div class="form-group">
+                        <input type="nama" name="nama" id="nama" class="form-control" placeholder="nama">
+                      </div>
+                      <div class="form-group">
+                        <input type="email" name="emails" id="emails" class="form-control" aria-describedby="emailHelp" placeholder="Email">
+                      </div>
+                      <div class="form-group">
+                        <input type="password" name="passwords" id="passwords" class="form-control" placeholder="Password">
+                      </div>
+                      <button id="btnRegis" class="btn btn-primary">Daftar</button>  
+                                 
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ########################################## FORM HIdden ################################################ -->
+<form action="admin/login/edit_user" method="POST" target="hidden-guest" id="sent_limit_g">
+    <input type="hidden" name="limits" id="limit_g">
+    <input type="hidden" name="nama" id="nama_g">
+    <input type="hidden" name="email" id="email_g">
+    <input type="hidden" name="stts" id="stts_g">
+
+    <input type="hidden" name="tgl" id="tgl_g">
+    <input type="hidden" name="id_pltan" id="idpltan_g">
+    <button type="sumbit" class="btn btn-primary" id="aksi_send" hidden="">Guest</button>
+</form>        
+
+
+<iframe class="embed-responsive-item" name="hidden-guest" style="display:none;"></iframe>
+    
+    <div id="byr" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">  
+                  <div class="embed-responsive embed-responsive-1by1">
+                      <iframe class="embed-responsive-item" name="hidden-form" style="border:none;"></iframe>
+                  </div>                    
+            </div>
+        </div>
+    </div>
+
+
+    <div id="priview" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Priview</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </div>
+                <div class="modal-body justify-content-center" id="serpoto">
+                  
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" id="btnSubmit" data-dismiss="modal">Simpan</button>
+                    <button class="btn btn-primary" onclick="imgBuild()">Share Image</button>
+                    <button class="btn btn-primary" onclick="imgBuild()">Share Text</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="show" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Show More</h4>
+                </div>
+                <div class="modal-body" id="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary"  data-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
+<script src="scripts/jquery-3.3.1.js"></script> 
+<script src="scripts/jquery-3.3.1.min.js"></script>
+<script src="css/jquery.simplePagination.js"></script>
+<script src="scripts/popper.min.js"></script>
+<script src="scripts/bootstrap.min.js"></script>
+<script src="rest_api.js"></script>
+<script src="crud.js"></script>
 
-
+<script> 
 function linkSrc(folder){
   var root = location.protocol + '//' + location.host + folder;
 }
 
-function openRightMenu() {
-  document.getElementById("rightMenu").style.display = "block";
-  document.getElementById("search-btn").style.display = "none";
-}
-
-function closeRightMenu() {
-  document.getElementById("rightMenu").style.display = "none";
-  document.getElementById("search-btn").style.display = "";
-}
-
 function displayHome(){
   $('#konten').html(``); 
-  $('#konten').html(`
-       <div class="row mt-3 justify-content-center">
-        <div class="col-md-8">
-          <h1 class="text-center">Temukan Plesetan</h1>
-          <div class="input-group mb-3 shadow">
-            <input type="text" class="form-control" placeholder="Masukan Kata Baku" id="input-search">
-            <div class="input-group-append">
-              <button class="btn btn-primary" type="button" id="search-btn"><i class="fa fa-search"></i> Search</button>
-            </div>
-          </div>
-        </div>  
-      </div>
-      <button id='btnGiveCommand'>Give Command!</button>
-    <br><br>
-    <span id='message'></span>
-      <hr>
-      <div class="row justify-content-center">
-        <div class="col-md-8">
-          <div class="table-responsive-sm">
-              <table class="table table-striped table-dark">
-                <thead style="display:none;" id="tble">
-                  <tr>
-                    <th scope="col">No.</th>
-                    <th scope="col">Plesetan</th> 
-                    <th scope="col">Arti</th>                    
-                  </tr>                   
-                </thead>
-                <div id="error"></div>
-
-                <tbody id="dta_plesetan">
-                  
-                </tbody>
-          </table>
-          </div>
-        </div>  
-      </div>
-    `);
-  closeRightMenu()
+  $('#konten').load(`html/Home.html`);
 }
 
-function displaySupport(){
-  $('#konten').html(``);
-  $('#konten').html(`
-      <div class="row mt-3 justify-content-center">
-        <div class="col-md-8">
-          <h1 class="text-center">Support</h1>
-          <h4>Bantu Kamus - Plesetan dengan mengisi Form Di bawah ini dengan benar, agar semakin banyak variasi kata yang dapat dicocokan untuk menjadi Plesetan</h4>
-          <hr>
-                  <div class="form-row">
-                    <div class="form-group col-md-6">
-                      <label for="Kosakata">Kosa Kata</label>
-                      <input type="text" class="form-control" id="kosakata">
-                    </div>
-                    <div class="form-group col-md-6">
-                      <label for="Ejaan">Ejaan</label>
-                      <input type="text" class="form-control" id="ejaan">
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="Arti">Arti</label>
-                    <textarea class="form-control" id="arti" rows="3"></textarea>
-                  </div>
-                  <button type="submit" class="btn btn-primary" id="send_data">Kirim</button>
-          </div>
-        </div>
-      </div>
-    `);
-  closeRightMenu()
+function displayPkalimat(){
+  $('#konten').html(``); 
+  $('#konten').load(`html/KetanKalimat.html`);
 }
+
+function displayPkata(){
+  $('#konten').html(``); 
+  $('#konten').load(`html/KetanKata.html`);
+}
+
+function displayGoP(){
+  $('#konten').html(``); 
+  $('#konten').load(`html/GoP.html`);   
+    produks();
+  }
+
+  function byr(){
+    $('#byr').modal({
+
+    });
+  }
 
 function displayAbout(){
   $('#konten').html(``);
-  $('#konten').html(`
-      <div class="row mt-3 justify-content-center">
-        <div class="col-md-8">
-          <h1 class="text-center">About</h1>
-          <h4 class="text-justify">Kamus - Plesetan Adalah alat untuk menemukan kata yang mirip berdasarkan ejaannya.Dengan memasukan 1 kosakata saja alat ini akan mencarikan kata yang mirip,Lebih dari 50.000 Kata terdapat di dalam kamus ini.</h4>
-          <h4 class="text-justify">Kamus - Plesetan diharapkan dapat membantu kalian dalam membuat joke joke lucu di kehidupan kalian sehingga kalian tidak perlu pusing memikirkan joke Plesetan.</h4>
-          <h4 class="text-justify">Berawal dari kebiasaan memplesetkan kata,Munculah masalah yang sering dihadapai yaitu daya ingat.Tidak semua manusia mempunyai daya ingat yang kuat sehingga untuk memudahkan memplesetkan kata dibuatlah Kamus - Plesetan</h4>
-          </div>
-        </div>
-      </div>
-    `);
-  closeRightMenu()
+  $('#konten').load(`html/About.html`);
 }
-</script>
 
-<script src="rest_api.js"></script>
-<script src="crud.js"></script>
-<script src="scripts/jquery-3.3.1.js"></script> 
-<script src="scripts/jquery-3.3.1.min.js"></script>
-<script src="scripts/popper.min.js"></script>
-<script src="scripts/bootstrap.min.js"></script>
+function displayLogin(){
+  $('#myModal').modal({
 
-<script type="text/javascript">
-  var aktif = aktif;
+  });
+}
+
+  $(document).ready(function(){
+    displayHome();
+  });
+
+  
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('sw.js').then(function(registration) {
@@ -176,6 +267,7 @@ function displayAbout(){
           if(registration.active){    
               aktif = true;
               console.log('Offline mode Siap Di gunakan')
+              $('#loading').hide();
           }
 
           registration.addEventListener('updatefound', () => {
@@ -185,6 +277,9 @@ function displayAbout(){
                 if(newWorker.state === 'activated'){
                   aktif = true ;
                   console.log('Offline mode Siap Di gunakan')
+
+                    $('#loading').hide();
+                  
                 }
               });   
           });
@@ -197,35 +292,233 @@ function displayAbout(){
 
 
     $('#konten').on('click','#search-btn',function(){
-    		$('#dta_plesetan').html("");
-        	if(aktif){
-            console.log('Offline mode');
-            cariPlesetan();
-          }else{
-            search_plesetan();
-            alert('Online Mode');
-          }
-    	});
+      if (limit == 0) 
+      {
+          alert('Limit Anda Sudah Habis , Kembali Lagi Besok Atau Upgrade Akun Mu')
+      }else
+      {
+          $('#dta_plesetan').html("");
+            if(aktif)
+            {
+              console.log('Offline mode');
+              cariPlesetan();
+            }else
+            {
+              search_plesetan();
+            }
+        }
+    });
 
     $('#konten').on('keyup','#input-search',function(e){
-    		if(e.keyCode === 13){
-    				$('#dta_plesetan').html("");
-          if(aktif){
+      if (limit == 0) 
+      {
+          alert('Limit Anda Sudah Habis , Kembali Lagi Besok Atau Upgrade Akun Mu')
+      }else
+      {
+        if(e.keyCode === 13)
+        {
+            $('#dta_plesetan').html("");
+          if(aktif)
+          {
             console.log('Offline mode');
             cariPlesetan();
-          }else{
-            console.log('Online Mode');
+          }else
+          {
             search_plesetan();
           }
-    		}		 	
-    	});
+        }      
+      }       
+    });
+
+    $('#konten').on('click','#search-btn-kk',function(){
+        if (limit == 0) 
+        {
+          alert('Limit Anda Sudah Habis , Kembali Lagi Besok Atau Upgrade Akun Mu')
+        }else
+        {
+          $('#dta_plesetan').html("");
+          if(aktif)
+          {
+            console.log('Offline mode');
+            cariPlesetanKata();
+          }else
+          {
+            search_plesetanKata();
+            alert('Online Mode');
+          }    
+        }
+    });
+
+    $('#konten').on('keyup','#input-search-kk',function(e){
+        if (limit == 0) 
+        {
+          alert('Limit Anda Sudah Habis , Kembali Lagi Besok Atau Upgrade Akun Mu')
+        }else
+        {
+          if(e.keyCode === 13)
+          {
+            $('#dta_plesetan').html("");
+            if(aktif)
+            {
+              console.log('Offline mode');
+              cariPlesetanKata();
+            }else
+            {
+              console.log('Online Mode');
+              search_plesetanKata();
+            }
+          }
+        }       
+    });
+
+    $('#konten').on('click','#search-btn-kkt',function(){
+        if (limit == 0) 
+        {
+          alert('Limit Anda Sudah Habis , Kembali Lagi Besok Atau Upgrade Akun Mu')
+        }else
+        {
+        
+          $('#dta_plesetan').html("");
+          if(aktif)
+          {
+            console.log('Offline mode');
+            cariPlesetanKalimat();
+          }else
+          {
+            search_plesetanKalimat();
+            alert('Online Mode');
+          }    
+        }
+    });
+
+    $('#konten').on('keyup','#input-search-kkt',function(e){
+      if (limit == 0) 
+      {
+          alert('Limit Anda Sudah Habis , Kembali Lagi Besok Atau Upgrade Akun Mu')
+
+      }else
+      {
+        
+        if(e.keyCode === 13)
+        {
+          $('#dta_plesetan').html("");
+          if(aktif)
+          {
+            console.log('Offline mode');
+            cariPlesetanKalimat();
+          }else
+          {
+            console.log('Online Mode');
+            search_plesetanKalimat();
+          }
+        }    
+      }     
+    });
 
     $('#konten').on('keydown','#input-search',function(e){
-        if(e.keyCode === 32){
+    if (limit == 0) 
+      {
+          alert('Limit Anda Sudah Habis , Kembali Lagi Besok Atau Upgrade Akun Mu')
+      }
+      else
+      {
+        if(e.keyCode === 32)
+        {
           alert("Tidak Boleh Input 2 Kata"); 
           event.preventDefault();
-        }     
-      });
+        } 
+      }   
+    });
+
+    $('#login').on('click',function(){
+        if ($('#email').val() && $('#password').val()) { 
+            $.ajax({
+                url: 'https://452138aee55a.ngrok.io/sw/admin/login/klien',
+                type:'post',
+                dataType:'json',
+                data:{
+                  'email': $('#email').val(),
+                  'password': $('#password').val()
+                },
+                success: function(result){
+                  if(result.length == 0){
+                    alert('Login Gagal')
+                  } 
+                  else{
+                    sent_limit(result[0].nm_user,result[0].stts_user,result[0].email,result[0].password,result[0].limits,result[0].id_user)
+                    if (result[0].id_menerima) {
+                        addtrx(result[0].tgl)
+                    }else{
+                        addtrx()
+                    }
+                  }
+                } 
+            });
+        }else{
+          alert('Username Atau Password Tidak Boleh Kosong')
+        }   
+    });
+
+    function datai(data,id){
+      sent_limit('Guest','-','-','-',data,id)
+
+      refreshTableData();
+      $('#myModal').modal('hide');
+    }
+
+    function datatgl(tgl,id){
+      guest_tgl(tgl,id)
+
+      $('#myModal').modal('hide');
+    }
+
+    function savedb(order_id,cd,id){
+      $.ajax({
+            url: 'https://452138aee55a.ngrok.io/sw/admin/login/tmbhtrx',
+            type:'post',
+            dataType:'json',
+            data:{
+              'id_trx': order_id,
+              'id_user':cd,
+              'id_prduk':id,
+              'no_rek':0, 
+              'stts_byr':'Pending' 
+            }
+        });
+    }
+
+    function closemdl(){
+      $('#byr').modal('hide');
+    }
+
+    $('#btnRegis').on('click',function(){
+        if($('#nama').val() && $('#emails').val() && $('#passwords').val()){    
+            $.ajax({
+                url: 'https://452138aee55a.ngrok.io/sw/admin/login/regis_email',
+                type:'post',
+                dataType:'json',
+                data:{
+                  'nm_user': $('#nama').val(),
+                  'email':$('#emails').val(),
+                  'psswrd':$('#passwords').val() 
+                },
+                success: function(result){
+                  if(result.length == 0){
+                    alert('Registrasi Gagal')
+                  } 
+                  else{
+                    sent_limit(result[0].nm_user,result[0].stts_user,result[0].email,result[0].password,result[0].limits,result[0].id_user)
+                    addtrx()
+                    
+                  }
+                }
+            });
+        }else{
+          alert('Nama,Username Atau Password Tidak Boleh Kosong')          
+        }
+    });
 </script>  
+
+
 </body>
 </html>

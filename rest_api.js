@@ -438,12 +438,10 @@
   }
 }(this);
 
-function imgBuild(idResult) {
-
-      var node = document.getElementById(idResult);
+function imgBuild() {     
+      var node = document.getElementById('serpotonye');
       
-      domtoimage.toPng(node) 
-        .then(function(dataUrl) {
+      domtoimage.toPng(node).then(function(dataUrl) {
 
           function dataURLtoFile(dataurl, filename) {
           var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
@@ -455,39 +453,58 @@ function imgBuild(idResult) {
           }
 
           var fail = dataURLtoFile(dataUrl, 'jokes.png');
-          
-          console.log(fail);
 
            const data = {
               files: [fail]
             };  
-          error.textContent = '';
-          navigator.share(data)
-          .then(() => {
+          // error.textContent = '';
+
+          navigator.share(data).then(() => {
           })
           .catch((err) => {
-            console.log('Unsuccessful share');
-            error.textContent = 'Share failed: ' + err.message;
+            alert('Unsuccessful share');
+            console.log(err)
+            // error.textContent = 'Share failed: ' + err.message;
           });
         })
         .catch(function(error) {
-          console.error('oops, something went wrong!', error);
+          console.log(error)
+          // alert('oops, something went wrong!', error);
+
+        // $('#serpoto').html('');
         });
-    };
+
+};
+
+function priview(warna,pala,isi){
+  $('#serpoto').html(`
+                      <div class="card mb-3 list-itemm `+ warna +`" id="serpotonye" style="width: 18rem;">
+                        <div class="card-header">`+pala+`</div>
+                        <div class="card-body text-dark">
+                          <p class="card-text">`+ isi +`</p>
+                        </div>
+                        <div class="card-footer text-right">Generated From Kamus Plesetan</div>
+                      </div>
+              `);
+
+      $('#priview').modal('show');
+}
 
 // Pelesetan Bunyi
 function search_plesetan(pesan){
   $('#dta_plesetan').html("");
     if (pesan) {
-      pesanp = pesan.replace(/ .*/, '');
-      var text = pesanp;
+      var pecah = pesan.split(" ");
+      var i = pecah.length - 1;
+      var text = pecah[i];
     }else{
       var text = $('#input-search').val();  
     }
-    
+
+    var arraybcr = [];
 
     $.ajax({
-      url: 'http://localhost:8989/sw/db_spell.php',
+      url: 'https://452138aee55a.ngrok.io/sw/db_spell.php',
       type:'get',
       dataType:'json',
       data:{
@@ -496,29 +513,43 @@ function search_plesetan(pesan){
       },
       success: function(result){
         if(result.length == 0){
+          arraybcr[0] = "Data Tidak Ada , Mulai Mendengarkan Kembali";
           $('#dta_plesetan').html(`
             <td colspan="3"><center><h1>Data Tidak Di temukan</h1></center><td>
           `);
         }
         else{
-            var lvlsblm = parseInt($('#lvl').text());
-            var lvl = lvlsblm + result.length;
-            updateprofile(lvl);
+            updateprofile();
             console.log(result.length)
-
+          var clr = ['bg-primary','bg-success','bg-warning','bg-info','bg-danger'];
+                var x = 0
           let data_plesetan = result;
           let nmr = 0 ;
-          $.each(data_plesetan,function (i,data){
-                           nmr++
-            $('#dta_plesetan').append(`
-                <tr id="` +nmr+ `">
-                    <th scope="row">`+ nmr +`</th>
-                    <td>`+ data.kata_baku +`</td>
-                    <td>`+ data.arti_katanya +`</td>
-                    <td><input type="submit" name="Ser" id="serit" onclick="imgBuild(`+nmr+`)"></td>
-                 </tr>
-            `);
-        }); 
+          $.each(data_plesetan,function (i,value){
+            var encode = $('<textarea />').html(""+value.makna_kata+"").text();
+            arraybcr[nmr] = value.kata;
+                             nmr++
+              var reg = new RegExp(value.kata.trim(),'gi')
+              $('#dta_plesetan').append(`
+                      <div class="card mb-3 list-itemm `+ clr[x] +`" style="width: 18rem;">
+                        <div class="card-header bg-transparent">`+ value.kata +`</div>
+                        <div class="card-body text-dark">
+                          <p class="card-text">`+ readmore(encode) +`</p>
+                        </div>
+                        <div class="card-footer text-right bg-transparent"><button class="btn btn-outline-dark" name="Ser" id="serit" onclick="priview('`+ clr[x] +`','Plesetan Bunyi','`+encode.substr(0,300).replace(reg,text)+`')"><i class="fas fa-share-alt"></i></button></div>
+                      </div>
+              `);
+              
+              if (x == 4) {
+                x = 0
+              }else{
+                x++ 
+              }
+        });
+        pagi()
+        if (pesan) {
+            textBicara(arraybcr) 
+          }
         }
       } 
     });
@@ -526,43 +557,64 @@ function search_plesetan(pesan){
 
 function cariPlesetan(pesan)
 {
+  $('#dta_plesetan').html("");
   if (pesan){
-    pesanp = pesan.replace(/ .*/, '');
-    var searchField = pesanp;
+      var pecah = pesan.split(" ");
+      var i = pecah.length - 1;
+      var searchField = pecah[i];
   }else{
     var searchField = $('#input-search').val();
   }
-  
+
+  var arraybcr = [];
   var max_str = searchField.trim();
   var nmr = 0 ;
   $.getJSON('kbbp.json',function(data)
   {
     var hasil = false;
+                  var clr = ['bg-primary','bg-success','bg-warning','bg-info','bg-danger'];
+                var x = 0              
     $.each(data,function(key,value)
     {
-        max_str_v = value.kata_baku.trim();
-        persen = similar_text(value.kata_baku.trim(),searchField.trim())                
+        max_str_v = value.kata.trim();
+        persen = similar_text(value.kata.trim(),searchField.trim())                
         if(persen > 75 && persen < 85 && max_str.length == max_str_v.length && max_str != max_str_v)
         {
           hasil = true;
+          var encode = $('<textarea />').html(""+value.makna_kata+"").text();
+              arraybcr[nmr] = value.kata;
               nmr++
+              var reg = new RegExp(value.kata.trim(),'gi')
               $('#dta_plesetan').append(`
-              <tr id="` +nmr+ `">
-                  <th scope="row">`+ nmr +`</th>
-                  <td>`+ value.kata_baku +`</td>
-                  <td>`+ value.arti_katanya +`</td>
-                  <td><input type="submit" name="Ser" id="serit" onclick="imgBuild(`+nmr+`)"></td>
-              </tr>
-          `);                          
+                    <div class="card mb-3 list-itemm `+ clr[x] +`"  style="width: 18rem;">
+                      <div class="card-header bg-transparent">`+ value.kata +`</div>
+                      <div class="card-body text-dark">
+                        <p class="card-text">`+ readmore(encode) +`</p>
+                      </div>
+                       <div class="card-footer text-right bg-transparent"><button class="btn btn-outline-dark" name="Ser" id="serit" onclick="priview('`+ clr[x] +`','Plesetan Bunyi','`+encode.substr(0,300).replace(reg,max_str)+`')"><i class="fas fa-share-alt"></i></button></div>
+                        </div>
+              `);
+          if (x == 4) {
+                x = 0
+              }else{
+                x++ 
+              }                         
         }                
     });
     if(!hasil){
-      alert("Data Tidak Di temukan");
-    }
+      arraybcr[0] = "Data Tidak Ada , Mulai Mendengarkan Kembali";
+      $('#dta_plesetan').html(`
+            <td colspan="3"><center><h1>Data Tidak Di temukan</h1></center><td>
+          `);
+      if (pesan) {
+            textBicara(arraybcr) 
+          }    }
     else{
-      var lvlsblm = parseInt($('#lvl').text());
-      var lvl = lvlsblm + nmr;
-      updateprofile(lvl);
+      updateprofile();
+      pagi()
+      if (pesan) {
+            textBicara(arraybcr) 
+          }
     }                 
   });  
 }
@@ -583,48 +635,58 @@ function ambilSingkatan(isi) {
 function search_plesetanKalimat(pesan){
   $('#dta_plesetan').html("");
     if (pesan) {
-      pesanp = ambilSingkatan(pesan);
-      var text = pesanp;
+      var text = pesan;
     }else{
-      var texts = $('#input-search').val();
-      pesanp = ambilSingkatan(texts);
-      var text = pesanp;  
+      var text = $('#input-search-kkt').val();  
     }
-    
+
+    var arraybcr = [];
 
     $.ajax({
-      url: 'http://localhost:8989/sw/db_spell.php',
+      url: 'https://452138aee55a.ngrok.io/sw/db_spell.php',
       type:'get',
       dataType:'json',
       data:{
-        'operasi':'Search',
+        'operasi':'Kalimat',
         'key': text
       },
       success: function(result){
         if(result.length == 0){
+          arraybcr[0] = "Data Tidak Ada , Mulai Mendengarkan Kembali";
           $('#dta_plesetan').html(`
             <td colspan="3"><center><h1>Data Tidak Di temukan</h1></center><td>
           `);
         }
         else{
-            var lvlsblm = parseInt($('#lvl').text());
-            var lvl = lvlsblm + result.length;
-            updateprofile(lvl);
-            console.log(result.length)
+            updateprofile();
 
           let data_plesetan = result;
           let nmr = 0 ;
-          $.each(data_plesetan,function (i,data){
-                           nmr++
+            var clr = ['bg-primary','bg-success','bg-warning','bg-info','bg-danger'];
+            var x = 0    
+          $.each(data_plesetan,function (i,value){
+            var encode = $('<textarea />').html(""+value.makna_kata+"").text();
+            arraybcr[nmr] = value.kata;
+            nmr++
             $('#dta_plesetan').append(`
-                <tr id="` +nmr+ `">
-                    <th scope="row">`+ nmr +`</th>
-                    <td>`+ data.kata_baku +`</td>
-                    <td>`+ data.arti_katanya +`</td>
-                    <td><input type="submit" name="Ser" id="serit" onclick="imgBuild(`+nmr+`)"></td>
-                 </tr>
+                <div class="card mb-3 list-itemm `+clr[x]+`" id="` +nmr+ `" style="width: 18rem;">
+                  <div class="card-header bg-transparent">`+ value.kata +`</div>
+                  <div class="card-body text-dark">
+                    <p class="card-text">`+ readmore(encode) +`</p>
+                  </div>
+                  <div class="card-footer text-right bg-transparent"><button class="btn btn-outline-dark" name="Ser" id="serit" onclick="priview('`+ clr[x] +`','Plesetan Kalimat','`+text+` Disingkat `+value.kata+`')"><i class="fas fa-share-alt"></i></button></div>
+                </div>
             `);
-        }); 
+              if (x == 4) {
+                x = 0
+              }else{
+                x++ 
+              } 
+          });
+          pagi()
+          if (pesan) {
+            textBicara(arraybcr) 
+          }
         }
       } 
     });
@@ -632,56 +694,563 @@ function search_plesetanKalimat(pesan){
 
 function cariPlesetanKalimat(pesan)
 {
+  $('#dta_plesetan').html("");
   if (pesan){
-    var spell = ambilSingkatan(pesan);
+    var spell = pesan;
   }else{
-    var texts = $('#input-search').val();
-      var spell = ambilSingkatan(texts);
+    var texts = $('#input-search-kkt').val();
+      var spell = texts;
   }
   
+    var arraybcr = [];
   var nmr = 0 ;
   $.getJSON('kbbp.json',function(data)
   {
     var hasil = false;
+    var clr = ['bg-primary','bg-success','bg-warning','bg-info','bg-danger'];
+            var x = 0 
     $.each(data,function(key,value)
     {
-        result = cek(value.kata_baku.trim(),spell)             
-        if(result === value.kata_baku.length)
-        {
-            hasil = true;
-              nmr++
-              $('#dta_plesetan').append(`
-              <tr id="` +nmr+ `">
-                  <th scope="row">`+ nmr +`</th>
-                  <td>`+ value.kata_baku +`</td>
-                  <td>`+ value.arti_katanya +`</td>
-                  <td><input type="submit" name="Ser" id="serit" onclick="imgBuild(`+nmr+`)"></td>
-              </tr>
-          `);                                    
-        }                
+        var firstw = value.kata.split("")
+        var firsts = spell.split("")
+        if(firsts[0] === firstw[0]){
+
+            if(cek(value.kata.trim(),spell) === value.kata.trim().length)
+            {
+                hasil = true;
+
+                  var encode = $('<textarea />').html(""+value.makna_kata+"").text();
+                  arraybcr[nmr] = value.kata;
+                  nmr++
+                  $('#dta_plesetan').append(`
+                  <div class="card mb-3 list-itemm `+clr[x]+`" id="` +nmr+ `" style="width: 18rem;">
+                  <div class="card-header bg-transparent">`+ value.kata +`</div>
+                  <div class="card-body text-dark">
+                    <p class="card-text">`+ readmore(encode) +`</p>
+                  </div>
+                  <div class="card-footer text-right bg-transparent"><button class="btn btn-outline-dark" name="Ser" id="serit" onclick="priview('`+ clr[x] +`','Plesetan Kalimat','`+spell+` Disingkat `+value.kata+`')"><i class="fas fa-share-alt"></i></button></div>
+                </div>
+              `); 
+                if (x == 4) {
+                x = 0
+              }else{
+                x++ 
+              }                                 
+            }          
+        }                        
     });
+
     if(!hasil){
-      alert("Data Tidak Di temukan");
+          $('#dta_plesetan').html(`
+            <td colspan="3"><center><h1>Data Tidak Di temukan</h1></center><td>
+          `);
+          arraybcr[0] = "Data Tidak Ada , Mulai Mendengarkan Kembali";
+          if (pesan) {
+            textBicara(arraybcr) 
+          }
     }
     else{
-      var lvlsblm = parseInt($('#lvl').text());
-      var lvl = lvlsblm + nmr;
-      updateprofile(lvl);
-    }                 
+      updateprofile();
+      pagi()
+      if (pesan) {
+            textBicara(arraybcr) 
+          }
+    }
+
   });  
 }
 // akhir Pelesetan kalimat
 
+// awal Pelesetan Kata -> kalimat
+
+function search_plesetanKata(pesan){
+  $('#dta_plesetan').html("");
+    if (pesan) {
+      var pecah = pesan.split(" ");
+      var i = pecah.length - 1;
+      var text = pecah[i];
+    }else{
+      var text = $('#input-search-kk').val();  
+    }
+    
+
+    var arraybcr = [];
+
+    $.ajax({
+      url: 'https://452138aee55a.ngrok.io/sw/db_spell.php',
+      type:'get',
+      dataType:'json',
+      data:{
+        'operasi':'Kata',
+        'key': text
+      },
+      success: function(result){
+        if(result.length == 0){
+          arraybcr[0] = "Data Tidak Ada , Mulai Mendengarkan Kembali";
+          $('#dta_plesetan').html(`
+            <td colspan="3"><center><h1>Data Tidak Di temukan</h1></center><td>
+          `);
+        }
+        else{
+            updateprofile();
+            console.log(result.length)
+
+            let data_plesetan = result;
+            let nmr = 0 ;
+            var clr = ['bg-primary','bg-success','bg-warning','bg-info','bg-danger'];
+            var x = 0 
+            $.each(data_plesetan,function (i,value){
+              arraybcr[nmr] = value;
+                nmr++
+                $('#dta_plesetan').append(`
+                    <div class="card mb-3 list-itemm `+clr[x]+`" id="` +nmr+ `" style="width: 18rem;">
+                      <div class="card-header bg-transparent">Kepanjangan</div>
+                      <div class="card-body text-dark">
+                        <p class="card-text">`+ value +`</p>
+                      </div>
+                      <div class="card-footer text-right bg-transparent"><button class="btn btn-outline-dark" name="Ser" id="serit" onclick="priview('`+ clr[x] +`','Plesetan Akronim','`+text+` Akronim Dari `+value+`')"><i class="fas fa-share-alt"></i></button></div>
+                    </div>
+                `);
+                 if (x == 4) {
+                x = 0
+              }else{
+                x++ 
+              }          
+            });
+            pagi() 
+            if (pesan) {
+            textBicara(arraybcr.slice(0,5)) 
+          }
+        }
+      } 
+    });
+}
+
+function cariPlesetanKata(pesan)
+{
+  $('#dta_plesetan').html("");
+  if (pesan){
+    var pecah = pesan.split(" ");
+    var i = pecah.length - 1;
+    var spell = pecah[i]; 
+  }else{
+    var texts = $('#input-search-kk').val();
+      var spell = texts;
+  }
+  
+  var cek = spell.split("")
+  var s ;
+  var p ;
+  var o ;
+  var k ;
+
+  var arraybcr = [];
+  var nmr = 0 ;
+  $.getJSON('kbbp.json',function(data)
+  {
+    var hasil = false;
+    var kks = [];
+    var kkp = [];
+    var kko = [];
+    var kkk = [];
+
+      var i = 0;
+      var j = 0;
+      var ka = 0;
+      var l = 0;
+
+
+  if(cek.length == 4){
+     var firsts = spell.split("")
+     s = firsts[0];
+     p = firsts[1];
+     o = firsts[2];
+     k = firsts[3];
+  }
+
+  else if(cek.length == 3){
+    var firsts = spell.split("")
+    s = firsts[0];
+    p = firsts[1];
+    o = firsts[2];
+  }
+
+  else if(cek.length == 2){
+    var firsts = spell.split("")
+    s = firsts[0];
+    p = firsts[1];
+  }
+
+  else if(cek.length > 4){
+    var firsts = spell.split("")
+    
+      if(firsts.length == 5){
+        s = firsts[0] + firsts[1];
+        p = firsts[2];
+        o = firsts[3];
+        k = firsts[4];                                  
+      }
+
+      else if(firsts.length == 6){
+        s = firsts[0] + firsts[1];
+        p = firsts[2] + firsts[3];
+        o = firsts[4];
+        k = firsts[5]; 
+      }
+
+      else if(firsts.length == 7){
+        s = firsts[0] + firsts[1];
+        p = firsts[2] + firsts[3];
+        o = firsts[4] + firsts[5];
+        k = firsts[6];
+      }
+
+      else if(firsts.length == 8){
+        s = firsts[0] + firsts[1];
+        p = firsts[2] + firsts[3];
+        o = firsts[4] + firsts[5];
+        k = firsts[6] + firsts[7];
+      }
+
+      else if(firsts.length == 9){
+        s = firsts[0] + firsts[1] + firsts[2];
+        p = firsts[3] + firsts[4];
+        o = firsts[5] + firsts[6];
+        k = firsts[7] + firsts[8];
+      }
+
+      else if(firsts.length == 10){
+        s = firsts[0] + firsts[1] + firsts[2];
+        p = firsts[3] + firsts[4] + firsts[5];
+        o = firsts[6] + firsts[7];
+        k = firsts[8] + firsts[9];
+      }
+
+      else if(firsts.length == 11){
+        s = firsts[0] + firsts[1] + firsts[2];
+        p = firsts[3] + firsts[4] + firsts[5];
+        o = firsts[6] + firsts[7] + firsts[8];
+        k = firsts[9] + firsts[10];
+      }
+
+      else if(firsts.length == 12){
+        s = firsts[0] + firsts[1] + firsts[2];
+        p = firsts[3] + firsts[4] + firsts[5];
+        o = firsts[6] + firsts[7] + firsts[8];
+        k = firsts[9] + firsts[10] + firsts[11];
+      }
+
+      else if(firsts.length == 13){
+        s = firsts[0] + firsts[1] + firsts[2] + firsts[3];
+        p = firsts[4] + firsts[5] + firsts[6];
+        o = firsts[7] + firsts[8] + firsts[9];
+        k = firsts[10] + firsts[11] + firsts[12];
+      }
+
+      else if(firsts.length == 14){
+        s = firsts[0] + firsts[1] + firsts[2] + firsts[3];
+        p = firsts[4] + firsts[5] + firsts[6] + firsts[7];
+        o = firsts[8] + firsts[9] + firsts[10];
+        k = firsts[11] + firsts[12] + firsts[13];
+      }
+
+      else if(firsts.length == 15){
+        s = firsts[0] + firsts[1] + firsts[2] + firsts[3];
+        p = firsts[4] + firsts[5] + firsts[6] + firsts[7];
+        o = firsts[8] + firsts[9] + firsts[10] + firsts[11];
+        k = firsts[12] + firsts[13] + firsts[14];
+      }
+
+      else if(firsts.length == 16){
+        s = firsts[0] + firsts[1] + firsts[2] + firsts[3];
+        p = firsts[4] + firsts[5] + firsts[6] + firsts[7];
+        o = firsts[8] + firsts[9] + firsts[10] + firsts[11];
+        k = firsts[12] + firsts[13] + firsts[14] + firsts[15];
+      }
+
+      else{
+          s = false;
+          p = false;
+          o = false;
+          k = false;
+      }
+  }
+
+  else{
+    s = false;
+    p = false;
+    o = false;
+    k = false;
+  }
+
+    $.each(data,function(key,value)
+    {
+      if(cek.length >= 4){        
+        var cek_s = value.kata.substr(0,s.length);
+        var cek_p = value.kata.substr(0,p.length);
+        var cek_o = value.kata.substr(0,o.length);
+        var cek_k = value.kata.substr(0,k.length);
+      }
+
+      else if(cek.length == 2){
+        var cek_s = value.kata.substr(0,s.length);
+        var cek_p = value.kata.substr(0,p.length);
+      }
+
+      else if(cek.length == 3){
+          var cek_s = value.kata.substr(0,s.length);
+          var cek_p = value.kata.substr(0,p.length);
+          var cek_o = value.kata.substr(0,o.length);
+      }
+      else{
+        var cek_s = false;
+        var cek_p = false;
+        var cek_o = false;
+        var cek_k = false;
+      }
+
+      if (s === cek_s && value.sifat_kata.toLowerCase().indexOf("adjektiva") != -1 && value.kata.trim().length >= 3 ) {
+        kks[i] = value.kata.trim();
+        i++
+      }
+      if (p === cek_p && value.sifat_kata.toLowerCase().indexOf("adjektiva") != -1 && value.kata.trim().length >= 3 ) {
+        kkp[j] = value.kata.trim();
+        j++
+      }
+
+      if (o === cek_o && value.sifat_kata.toLowerCase().indexOf("adjektiva") != -1 && value.kata.trim().length >= 3 ) {
+        kko[ka] = value.kata.trim();
+        ka++
+      }
+
+      if (k === cek_k && value.sifat_kata.toLowerCase().indexOf("adjektiva") != -1 && value.kata.trim().length >= 3 ) {
+        kkk[l] = value.kata.trim();
+        l++
+      }
+        
+    });
+
+    var clr = ['bg-primary','bg-success','bg-warning','bg-info','bg-danger'];
+            var x = 0 
+    if(cek.length >= 4){        
+
+        for(var p = 0 ; p < Math.min(kks.length,5); p++){
+          for(var q = 0 ; q < Math.min(kkp.length,5); q++){
+            for(var r = 0 ; r < Math.min(kko.length,5); r++){
+              for(var s = 0 ; s < Math.min(kkk.length,5); s++){
+                if (kks[p] && kkp[q] && kko[r] && kkk[s]){
+                        hasil = true;
+                        arraybcr[nmr] = kks[p] +" "+ kkp[q] +" "+ kko[r] +" "+ kkk[s];
+                        nmr++
+                        $('#dta_plesetan').append(`                     
+                        <div class="card mb-3 list-itemm `+clr[x]+`" id="` +nmr+ `" style="width: 18rem;">
+                          <div class="card-header bg-transparent">Kepanjangan</div>
+                          <div class="card-body text-dark">
+                            <p class="card-text">`+ kks[p] +" "+ kkp[q] +" "+ kko[r] +" "+ kkk[s] +`</p>
+                          </div>
+                          <div class="card-footer text-right bg-transparent"><button class="btn btn-outline-dark" name="Ser" id="serit" onclick="priview('`+ clr[x] +`','Plesetan Akronim','`+spell+` Akronim Dari `+arraybcr[nmr-1]+`')"><i class="fas fa-share-alt"></i></button></div>
+                        </div>
+                    `);
+                     if (x == 4) {
+                      x = 0
+                    }else{
+                      x++ 
+                    }           
+                }else{
+                  p = kks.length;
+                }            
+              }
+            } 
+          }
+        }
+
+        // for (var i = 0; i < Math.min(kks.length,kkp.length,kko.length,kkk.length) ; i++) {
+        //         hasil = true;
+        //         arraybcr[nmr] = kks[i] +" "+ kkp[i] +" "+ kko[i] +" "+ kkk[i];
+        //         nmr++
+        //         $('#dta_plesetan').append(`                     
+        //         <div class="card mb-3 list-itemm `+clr[x]+`" id="` +nmr+ `" style="width: 18rem;">
+        //           <div class="card-header bg-transparent">Kepanjangan</div>
+        //           <div class="card-body text-dark">
+        //             <p class="card-text">`+ kks[i] +" "+ kkp[i] +" "+ kko[i] +" "+ kkk[i] +`</p>
+        //           </div>
+        //           <div class="card-footer text-right bg-transparent"><button class="btn btn-outline-dark" name="Ser" id="serit" onclick="imgBuild(`+nmr+`)"><i class="fas fa-share-alt"></i></button></div>
+        //         </div>
+        //     `);
+        // }
+      }
+
+
+      else if(cek.length == 2){
+
+        for(var p = 0 ; p < Math.min(kks.length,50); p++){
+          for(var q = 0 ; q < Math.min(kkp.length,50); q++){
+            if (kks[p] && kkp[q]){
+               hasil = true;
+                        arraybcr[nmr] = kks[p] +" "+ kkp[q];
+                    nmr++
+                    $('#dta_plesetan').append(`
+                        <div class="card mb-3 list-itemm `+clr[x]+`" id="` +nmr+ `" style="width: 18rem;">
+                          <div class="card-header bg-transparent">Kepanjangan</div>
+                          <div class="card-body text-dark">
+                            <p class="card-text">`+ kks[p] +" "+ kkp[q] +`</p>
+                          </div>
+                          <div class="card-footer text-right bg-transparent"><button class="btn btn-outline-dark" name="Ser" id="serit" onclick="priview('`+ clr[x] +`','Plesetan Akronim','`+spell+` Akronim Dari `+arraybcr[nmr-1]+`')"><i class="fas fa-share-alt"></i></button></div>
+                        </div>
+                `); 
+                    if (x == 4) {
+                      x = 0
+                    }else{
+                      x++ 
+                    }
+            }else{
+              p = kks.length;
+            }             
+          }
+        }
+
+        // for (var i = 0; i < Math.min(kks.length,kkp.length) ; i++) {
+        //         hasil = true;
+        //         arraybcr[nmr] = kks[i] +" "+ kkp[i];
+        //         nmr++
+        //         $('#dta_plesetan').append(`                     
+        //         <div class="card mb-3 list-itemm `+clr[x]+`" id="` +nmr+ `" style="width: 18rem;">
+        //           <div class="card-header bg-transparent">Kepanjangan</div>
+        //           <div class="card-body text-dark">
+        //             <p class="card-text">`+ kks[i] +" "+ kkp[i] +`</p>
+        //           </div>
+        //           <div class="card-footer text-right bg-transparent"><button class="btn btn-outline-dark" name="Ser" id="serit" onclick="imgBuild(`+nmr+`)"><i class="fas fa-share-alt"></i></button></div>
+        //         </div>
+        //     `);
+        // }
+      }
+
+      else if(cek.length == 3){
+        for(var p = 0 ; p < Math.min(kks.length,7); p++){
+          for(var q = 0 ; q < Math.min(kkp.length,7); q++){
+            for(var s = 0 ; s < Math.min(kko.length,7); s++){
+              if (kks[p] && kkp[q] && kko[s]){
+                 hasil = true;
+
+                        arraybcr[nmr] = kks[p] +" "+ kkp[q] +" "+ kko[s];
+                      nmr++
+                      $('#dta_plesetan').append(`
+                        <div class="card mb-3 list-itemm `+clr[x]+`" id="` +nmr+ `" style="width: 18rem;">
+                          <div class="card-header bg-transparent">Kepanjangan</div>
+                          <div class="card-body text-dark">
+                            <p class="card-text">`+ kks[p] +" "+ kkp[q] +" "+ kko[s] +`</p>
+                          </div>
+                          <div class="card-footer text-right bg-transparent"><button class="btn btn-outline-dark" name="Ser" id="serit" onclick="priview('`+ clr[x] +`','Plesetan Akronim','`+spell+` Akronim Dari `+arraybcr[nmr-1]+`')"><i class="fas fa-share-alt"></i></button></div>
+                        </div>
+                  `); 
+                      if (x == 4) {
+                      x = 0
+                    }else{
+                      x++ 
+                    }
+              }else{
+                p = kks.length;
+              }            
+            }
+          }
+        }
+
+        // for (var i = 0; i < Math.min(kks.length,kkp.length,kko.length) ; i++) {
+        //         hasil = true;
+        //         arraybcr[nmr] = kks[i] +" "+ kkp[i] +" "+ kko[i];
+        //         nmr++
+        //         $('#dta_plesetan').append(`                     
+        //         <div class="card mb-3 list-itemm `+clr[x]+`" id="` +nmr+ `" style="width: 18rem;">
+        //           <div class="card-header bg-transparent">Kepanjangan</div>
+        //           <div class="card-body text-dark">
+        //             <p class="card-text">`+ kks[i] +" "+ kkp[i] +" "+ kko[i] +`</p>
+        //           </div>
+        //           <div class="card-footer text-right bg-transparent"><button class="btn btn-outline-dark" name="Ser" id="serit" onclick="imgBuild(`+nmr+`)"><i class="fas fa-share-alt"></i></button></div>
+        //         </div>
+        //     `);
+        // }
+      }
+
+      else{
+        console.log("panjang baring krng dari 2")
+      }
+
+
+    if(!hasil){
+          arraybcr[0] = "Data Tidak Ada , Mulai Mendengarkan Kembali";
+          $('#dta_plesetan').html(`
+            <td colspan="3"><center><h1>Data Tidak Di temukan</h1></center><td>
+          `);
+          if (pesan) {            
+            textBicara(arraybcr.slice(0,5)) 
+          }
+    }
+    else{
+      updateprofile();
+      pagi()
+      if (pesan) {
+            textBicara(arraybcr.slice(0,5)) 
+          }
+    }
+
+  });  
+}
+// akir Pelesetan Kata -> kalimat
+
+//pagination
+function pagi(){
+    var items = $('.lapis .list-itemm');
+    var numitem = items.length;
+    var perPage = 4;
+
+    items.slice(perPage).hide();
+
+    $('#pagination-container').pagination({
+      items: numitem,
+      itemsOnPage : perPage,
+      displayedPages:8,
+      prevText : "<",
+      nextText : ">",
+      onPageClick : function (pageNumber){
+          var showForm = perPage * (pageNumber - 1);
+          var showTo  = showForm + perPage;
+          items.hide().slice(showForm, showTo).show();
+      }
+    });
+}
+//akkhir pagination
+
+//readmore
+function readmore(text){
+  if (text.length > 300) {
+    var potong = text.substr(0,300);
+    potong += `<a href="#" class="card-link" style="color:red;" onclick="showMore('`+text+`')"> Read More</a>`;
+
+    return potong
+  }else{
+    return text
+  }
+}
+
+function showMore(isi){
+  $("#modal-body").html("")
+
+  $("#modal-body").append(isi)
+
+  $('#show').modal({
+
+    });
+}
+//akir readmore
+
 function showForm(){
 $('#myModal').modal({
-      backdrop: 'static'
+      backdrop:'static'
     });
 }
 
 function cek(w,s) {
-  var wrd = w;
-  var spl = s;
-  var word = wrd.split("");
+  var word = w.split("");
   var splitw = s.split(" ");
   var spell = [];
   for (i = 0 ; i < splitw.length ; i++){
@@ -690,35 +1259,47 @@ function cek(w,s) {
   var wa=0;
   var sa=0;
   var saa=0;
-  var saac = 0;
+  var swkl = 0;
   var r = 0;
+  var x = false;
   if(word[0] === spell[0][0])
   {
-    while(wa < word.length){
-      while(saa < spell[sa].length){
+    for(;wa < word.length;wa++){   
+      for(;saa < spell[sa].length;){
           if(word[wa] === spell[sa][saa]){
-              if(saac <= saa){
+                    if(sa > 0){
+                      swkl++
+                      if(swkl === spell.length){
+                        x = true;
+                      }
+                    }
                     r++
-                    wa++
-                    saa++
-                    saac=saa;
-                    break;
-                }                
+                    saa++                    
+                    break;                           
             }
-            else{
-              if((spell.length - 1) > sa){                
-                sa++
-                saa=0;
-                saac=0;
-              }
-              else{
-                break;
-              }              
+          else{
+              if(sa > 0){
+                saa = 99;
+                  wa = 99;
+                  r = 99;
+              }else{
+                if((spell.length - 1) > sa){                
+                  sa++
+                  saa=0;                  
+                }else{
+                  saa = 99;
+                  wa = 99;
+                }
+              }             
             }
         }
     }    
   }
-  return r
+  if(x){
+    return r
+  }else{
+    return false
+  }
 }
 
 //similiar text
@@ -779,6 +1360,7 @@ function similar_text (first, second, percent) {
   return (sum * 200) / (firstLength + secondLength)
 }
 
+        var aktif = aktif;
 //speech recognartion
         var message = $('#konten','#message');
 
@@ -794,21 +1376,38 @@ function similar_text (first, second, percent) {
         recognition.lang = 'id-ID';
         recognition.interimResults = false;
 
+        var pid ;
+
         recognition.onresult = function(event) {
             var last = event.results.length - 1;
             var command = event.results[last][0].transcript;
             message.textContent = 'Voice Input: ' + command + '.';
-            
 
             if(aktif){
-              console.log('Offline mode');
-              cariPlesetanKalimat(command);
+              // console.log('Offline mode');
+                if (pid === "index") {
+                  cariPlesetan(command);
+                }
+                else if(pid === "kata"){
+                  cariPlesetanKata(command);
+                }
+                else{
+                  cariPlesetanKalimat(command);
+                }                   
             }else{
-              search_plesetanKalimat(command);
-              alert('Online Mode');
+              if (pid === "index") {
+                  search_plesetan(command);
+                }
+                else if(pid === "kata"){
+                  search_plesetanKata(command);
+                }
+                else{
+                  search_plesetanKalimat(command);
+                }
+              // alert('Online Mode');
             }
 
-            textBicara(command);
+            // textBicara(command);
         };
 
         recognition.onspeechend = function() {
@@ -822,9 +1421,24 @@ function similar_text (first, second, percent) {
         $('#konten').on('click','#btnGiveCommand', function(){
             recognition.start();
             message.textContent = '';
+            pid = "kalimat";
+        });
+
+        $('#konten').on('click','#btnGiveCommandindex', function(){
+            recognition.start();
+            message.textContent = '';
+            pid = "index";
+        });
+
+
+        $('#konten').on('click','#btnGiveCommandkata', function(){
+            recognition.start();
+            message.textContent = '';
+            pid = "kata";
         });
 
         function textBicara(pesan){
+
             const speech = new SpeechSynthesisUtterance();
             speech.text = pesan;
             speech.volume = 1;
@@ -832,5 +1446,9 @@ function similar_text (first, second, percent) {
             speech.pitch = 1;
             speech.lang = 'id-ID';
 
-            window.speechSynthesis.speak(speech);
+              window.speechSynthesis.speak(speech);
+
+              speech.onend = function(event){
+                  recognition.start(); 
+              }
         }

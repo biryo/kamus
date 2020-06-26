@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Kamus - Plesetan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<meta name=”Description” content="Kamus - Plesetan , Terjemahkan kata baku menjadi Kata Baku yang mirip (PLESETAN)."> 
+
+<!-- Bootstrap CSS -->
+<script src="scripts/jquery.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/w3.css">
+    <script src="scripts/jsstore.js"></script>
+    <script src="scripts/jsstore.worker.js"></script>
+    
+    <!-- <link rel="stylesheet" href="css/font-awesome.min.css"> -->
+  <script src="scripts/jquery.min.js"></script>
+</head>
+<body onload="displayHome()" id="modal">
+  <div class="profil"><table id="table_profil" hidden></table></div>
+
+    <div class="w3-sidebar w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
+      <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large">&times;</button>
+      <a href="#" class="w3-bar-item w3-button" onclick="displayHome()">Home</a>a
+      <a href="#" class="w3-bar-item w3-button" onclick="displaySupport()">Support</a>
+      <a href="#" class="w3-bar-item w3-button" onclick="displayAbout()">About</a>
+    </div>
+
+    <nav class="navbar navbar-light bg-primary">
+      <a class="navbar-brand">Kamus - Plesetan</a>
+        <button class="btn btn-light my-2 my-sm-0" onclick="openRightMenu()">&#9776; Menu</button>
+    </nav>
+
+<div class="container" id="page">
+    <div class="container" id="konten">
+     <!-- ini konten -->
+    </div>
+
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Selamat Datang !</h4>
+                </div>
+                <div class="modal-body">
+                    <label for="Nama">Nama</label>
+                    <input type="text" class="form-control" id="nama" placeholder="Masukan Nama">                 
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="btnSubmit" data-dismiss="modal">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+function linkSrc(folder){
+  var root = location.protocol + '//' + location.host + folder;
+}
+
+function openRightMenu() {
+  document.getElementById("rightMenu").style.display = "block";
+  document.getElementById("search-btn").style.display = "none";
+}
+
+function closeRightMenu() {
+  document.getElementById("rightMenu").style.display = "none";
+  document.getElementById("search-btn").style.display = "";
+}
+
+function displayHome(){
+  $('#konten').html(``); 
+  $('#konten').html(`
+       <div class="row mt-3 justify-content-center">
+        <div class="col-md-8">
+          <h1 class="text-center">Temukan Plesetan</h1>
+          <div class="input-group mb-3 shadow">
+            <input type="text" class="form-control" placeholder="Masukan Kata Baku" id="input-search">
+            <div class="input-group-append">
+              <button class="btn btn-primary" type="button" id="search-btn"><i class="fa fa-search"></i> Search</button>
+            </div>
+          </div>
+        </div>  
+      </div>
+      <button id='btnGiveCommandkata'>Give Command!</button>
+    <br><br>
+    <span id='message'></span>
+      <hr>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="table-responsive-sm">
+              <table class="table table-striped table-dark">
+                <thead style="display:none;" id="tble">
+                  <tr>
+                    <th scope="col">No.</th>
+                    <th scope="col">Plesetan</th> 
+                    <th scope="col">Arti</th>                    
+                  </tr>                   
+                </thead>
+                <div id="error"></div>
+
+                <tbody id="dta_plesetan">
+                  
+                </tbody>
+          </table>
+          </div>
+        </div>  
+      </div>
+    `);
+  closeRightMenu()
+}
+
+function displaySupport(){
+  $('#konten').html(``);
+  $('#konten').html(`
+      <div class="row mt-3 justify-content-center">
+        <div class="col-md-8">
+          <h1 class="text-center">Support</h1>
+          <h4>Bantu Kamus - Plesetan dengan mengisi Form Di bawah ini dengan benar, agar semakin banyak variasi kata yang dapat dicocokan untuk menjadi Plesetan</h4>
+          <hr>
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label for="Kosakata">Kosa Kata</label>
+                      <input type="text" class="form-control" id="kosakata">
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="Ejaan">Ejaan</label>
+                      <input type="text" class="form-control" id="ejaan">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="Arti">Arti</label>
+                    <textarea class="form-control" id="arti" rows="3"></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary" id="send_data">Kirim</button>
+          </div>
+        </div>
+      </div>
+    `);
+  closeRightMenu()
+}
+
+function displayAbout(){
+  $('#konten').html(``);
+  $('#konten').html(`
+      <div class="row mt-3 justify-content-center">
+        <div class="col-md-8">
+          <h1 class="text-center">About</h1>
+          <h4 class="text-justify">Kamus - Plesetan Adalah alat untuk menemukan kata yang mirip berdasarkan ejaannya.Dengan memasukan 1 kosakata saja alat ini akan mencarikan kata yang mirip,Lebih dari 50.000 Kata terdapat di dalam kamus ini.</h4>
+          <h4 class="text-justify">Kamus - Plesetan diharapkan dapat membantu kalian dalam membuat joke joke lucu di kehidupan kalian sehingga kalian tidak perlu pusing memikirkan joke Plesetan.</h4>
+          <h4 class="text-justify">Berawal dari kebiasaan memplesetkan kata,Munculah masalah yang sering dihadapai yaitu daya ingat.Tidak semua manusia mempunyai daya ingat yang kuat sehingga untuk memudahkan memplesetkan kata dibuatlah Kamus - Plesetan</h4>
+          </div>
+        </div>
+      </div>
+    `);
+  closeRightMenu()
+}
+</script>
+
+<script src="rest_api.js"></script>
+<script src="crud.js"></script>
+<script src="scripts/jquery-3.3.1.js"></script> 
+<script src="scripts/jquery-3.3.1.min.js"></script>
+<script src="scripts/popper.min.js"></script>
+<script src="scripts/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+  var aktif = aktif;
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js').then(function(registration) {
+          // Registration was successful
+          if(registration.active){    
+              aktif = true;
+              console.log('Offline mode Siap Di gunakan')
+          }
+
+          registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+
+              newWorker.addEventListener('statechange', () => {
+                if(newWorker.state === 'activated'){
+                  aktif = true ;
+                  console.log('Offline mode Siap Di gunakan')
+                }
+              });   
+          });
+        }, function(err) {
+          // registration failed :(
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    } 
+
+
+    $('#konten').on('click','#search-btn',function(){
+    		$('#dta_plesetan').html("");
+        	if(aktif){
+            console.log('Offline mode');
+            cariPlesetanKata();
+          }else{
+            search_plesetanKata();
+            alert('Online Mode');
+          }
+    	});
+
+    $('#konten').on('keyup','#input-search',function(e){
+    		if(e.keyCode === 13){
+    				$('#dta_plesetan').html("");
+          if(aktif){
+            console.log('Offline mode');
+            cariPlesetanKata();
+          }else{
+            console.log('Online Mode');
+            search_plesetanKata();
+          }
+    		}		 	
+    	});
+
+    // $('#konten').on('keydown','#input-search',function(e){
+    //     if(e.keyCode === 32){
+    //       alert("Tidak Boleh Input 2 Kata"); 
+    //       event.preventDefault();
+    //     }     
+    //   });
+</script>  
+</body>
+</html>
