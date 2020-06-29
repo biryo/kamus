@@ -498,7 +498,7 @@ function search_plesetan(pesan){
       var i = pecah.length - 1;
       var text = pecah[i];
     }else{
-      var text = $('#input-search').val();  
+      var text = $('#input-search').val().toLowerCase();  
     }
 
     var arraybcr = [];
@@ -563,7 +563,7 @@ function cariPlesetan(pesan)
       var i = pecah.length - 1;
       var searchField = pecah[i];
   }else{
-    var searchField = $('#input-search').val();
+    var searchField = $('#input-search').val().toLowerCase();
   }
 
   var arraybcr = [];
@@ -637,7 +637,7 @@ function search_plesetanKalimat(pesan){
     if (pesan) {
       var text = pesan;
     }else{
-      var text = $('#input-search-kkt').val();  
+      var text = $('#input-search-kkt').val().toLowerCase();  
     }
 
     var arraybcr = [];
@@ -698,7 +698,7 @@ function cariPlesetanKalimat(pesan)
   if (pesan){
     var spell = pesan;
   }else{
-    var texts = $('#input-search-kkt').val();
+    var texts = $('#input-search-kkt').val().toLowerCase();
       var spell = texts;
   }
   
@@ -770,7 +770,7 @@ function search_plesetanKata(pesan){
       var i = pecah.length - 1;
       var text = pecah[i];
     }else{
-      var text = $('#input-search-kk').val();  
+      var text = $('#input-search-kk').val().toLowerCase();  
     }
     
 
@@ -834,7 +834,7 @@ function cariPlesetanKata(pesan)
     var i = pecah.length - 1;
     var spell = pecah[i]; 
   }else{
-    var texts = $('#input-search-kk').val();
+    var texts = $('#input-search-kk').val().toLoweCase();
       var spell = texts;
   }
   
